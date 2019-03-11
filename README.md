@@ -24,20 +24,24 @@ int main()
 {
 
 }
+
 2) every function definition should have the curly brace underneath
 example:
 void function1()
 {
 
 }
+
 3) every condition statement (if, elseif, else, for, while, do-while, switch) should have the curly brace on the same line
 examples:
 if {
 
 }
+
 while () {
 
 }
+
 switch () {
 
 }
