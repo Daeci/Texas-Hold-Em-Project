@@ -1,0 +1,7 @@
+Sascha:
+Creation of 2 players (Player 1 = human, Player 2 = computer)
+Dealing of cards to both players
+River card deal handling
+
+Mitchell:
+End of game score check
