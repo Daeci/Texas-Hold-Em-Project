@@ -1,23 +1,10 @@
-#include <iostream>
-#include <vector>    // std::vector
-#include <string>
 #include <algorithm> // std::random_shuffle
 #include <ctime>     // std::time
-#include <cstdlib>   // std::rand, std::srand
-
-class Card {
-    std::string suit;
-    std::string value;
-public:
-    Card(std::string suit = "", std::string value = "");
-    ~Card() { /* nothing */ }
-    void setSuit(std::string suit) { this->suit = suit; }
-    std::string getSuit() { return suit; }
-    void setValue(std::string value) { this->value = value; }
-    std::string getValue() { return value; }
-};
+#include <cstdlib>   // std::srand
+#include "debug.h"
 
 void fillDeck(std::vector<Card> &deck);
+void dealCards(std::vector<Card> &deck, Player &p1, Player &p2);
 
 int main()
 {
@@ -26,13 +13,8 @@ int main()
     fillDeck(deck);
     std::random_shuffle(deck.begin(), deck.end());
 
-
-}
-
-Card::Card(std::string suit, std::string value)
-{
-    this->suit = suit;
-    this->value = value;
+    Player human, computer;
+    dealCards(deck, human, computer);
 }
 
 void fillDeck(std::vector<Card> &deck)
@@ -98,4 +80,13 @@ void fillDeck(std::vector<Card> &deck)
             deck.push_back(temp);
         }
     }
+}
+
+void dealCards(std::vector<Card> &deck, Player &p1, Player &p2)
+{
+    p1 = Player(deck[0], deck[1]);
+    deck.erase(deck.begin(), deck.begin() + 2);
+    
+    p2 = Player(deck[0], deck[1]);
+    deck.erase(deck.begin(), deck.begin() + 2);
 }
