@@ -19,6 +19,8 @@ int main()
     dealCards(deck, human, computer);
     std::vector<Card> riverDeck;
     dealRiver(deck, riverDeck);
+    
+}
 
 void fillDeck(std::vector<Card> &deck)
 {
