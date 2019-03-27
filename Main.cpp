@@ -20,6 +20,7 @@ int main()
     std::vector<Card> riverDeck;
     dealRiver(deck, riverDeck);
     
+    return 0;
 }
 
 void fillDeck(std::vector<Card> &deck)
