@@ -2,9 +2,11 @@
 #include <ctime>     // std::time
 #include <cstdlib>   // std::srand
 #include "debug.h"
+//#include "Card.h"
 
 void fillDeck(std::vector<Card> &deck);
 void dealCards(std::vector<Card> &deck, Player &p1, Player &p2);
+void dealRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck);
 
 int main()
 {
@@ -15,7 +17,8 @@ int main()
 
     Player human, computer;
     dealCards(deck, human, computer);
-}
+    std::vector<Card> riverDeck;
+    dealRiver(deck, riverDeck);
 
 void fillDeck(std::vector<Card> &deck)
 {
@@ -86,7 +89,16 @@ void dealCards(std::vector<Card> &deck, Player &p1, Player &p2)
 {
     p1 = Player(deck[0], deck[1]);
     deck.erase(deck.begin(), deck.begin() + 2);
-    
+
     p2 = Player(deck[0], deck[1]);
     deck.erase(deck.begin(), deck.begin() + 2);
+}
+
+void dealRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck)
+{
+    const int RIVER_SIZE = 5;
+    for (int i = 0; i < RIVER_SIZE; i++) {
+        riverDeck.push_back(deck[i]);
+    }
+    deck.erase(deck.begin(), deck.begin() + 5);
 }
