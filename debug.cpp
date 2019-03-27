@@ -19,3 +19,12 @@ void debugPlayerCardsDisplay(Player p, std::string name)
     std::cout << p.getCard2().getValue() << " of " << p.getCard2().getSuit() << std::endl;
     std::cout << "\n";
 }
+
+void debugRiverDeckDisplay(std::vector<Card> riverDeck)
+{
+    std::cout << "River Deck:\n";
+    for (int i = 0; i < riverDeck.size(); i++) {
+        std::cout << riverDeck[i].getValue() << " of " << riverDeck[i].getSuit() << std::endl;
+    }
+    std::cout << "\n";
+}
