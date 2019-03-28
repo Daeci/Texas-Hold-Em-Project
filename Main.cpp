@@ -6,14 +6,7 @@
 
 void fillDeck(std::vector<Card> &deck);
 void dealCards(std::vector<Card> &deck, Player &p1, Player &p2);
-void displayPlayerCards(Player p);
-void dealWholeRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck);
-void displayCurrentPot(int pot);
-void displayOptionMenu();
-void preFlop();
-void flop();
-void turn();
-void river();
+void dealRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck);
 
 int main()
 {
@@ -24,8 +17,9 @@ int main()
 
     Player human, computer;
     dealCards(deck, human, computer);
-    displayPlayerCards(human);
-
+    std::vector<Card> riverDeck;
+    dealRiver(deck, riverDeck);
+    
     return 0;
 }
 
@@ -96,50 +90,18 @@ void fillDeck(std::vector<Card> &deck)
 
 void dealCards(std::vector<Card> &deck, Player &p1, Player &p2)
 {
-    p1 = Player(deck[0], deck[1], 100);
+    p1 = Player(deck[0], deck[1]);
     deck.erase(deck.begin(), deck.begin() + 2);
 
-    p2 = Player(deck[0], deck[1], 100);
+    p2 = Player(deck[0], deck[1]);
     deck.erase(deck.begin(), deck.begin() + 2);
 }
 
-void displayPlayerCards(Player p)
-{
-    std::cout << "Your cards: \n";
-    std::cout << p.getCard1().getValue() << " of " << p.getCard1().getSuit() << std::endl;
-    std::cout << p.getCard2().getValue() << " of " << p.getCard2().getSuit() << std::endl;
-}
-
-void dealWholeRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck)
+void dealRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck)
 {
     const int RIVER_SIZE = 5;
     for (int i = 0; i < RIVER_SIZE; i++) {
         riverDeck.push_back(deck[i]);
     }
     deck.erase(deck.begin(), deck.begin() + 5);
-}
-
-void displayCurrentPot(int pot)
-{
-
-}
-
-void displayOptionMenu()
-{
-    std::cout << "\n";
-    std::cout << "Options:\n";
-    std::cout << "1. Fold, 2. Bet, 3. Raise\n";
-    std::cout << "Choice: ";
-    int option;
-    do {
-        std::cin >> option;
-        if (option < 1 || option > 3) {
-            std::cout << "Invalid choice.\n";
-        }
-        else {
-            switch (option) {
-
-            }
-        }
-    } while (option < 1 || option > 3);    
 }
