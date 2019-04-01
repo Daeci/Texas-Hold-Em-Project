@@ -2,5 +2,5 @@
 
 std::ostream& operator<<(std::ostream &os, const Player& p)
 {
-    os << "Player " << p.playerNumber << std::endl;
+    return os << "Player " << p.playerNumber << std::endl;
 }
