@@ -8,10 +8,9 @@ void initGame(std::vector<Card> &deck, std::vector<Player> &players, int playerM
 void fillDeck(std::vector<Card> &deck);
 void dealCards(std::vector<Card> &deck, std::vector<Player> &playerList, int playerMoney);
 void displayPlayerCards(Player p);
-//void dealWholeRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck);
 void displayCurrentPot(int pot);
-int displayOptionMenu(Player p);
-void preFlop(std::vector<Player> &playerList, int &pot, const int BIG_BLIND, const int SMALL_BLIND, bool &isGameRunning);
+int displayOptionMenu(Player p, bool isMaxBet);
+void preFlop(std::vector<Player> &playerList, int &pot, const int BIG_BLIND, const int SMALL_BLIND, bool &isGameRunning, int numNeededToFold);
 void flop(std::vector<Player> &playerList, int &pot, bool &isGameRunning);
 void turn(std::vector<Player> &playerList, int &pot, bool &isGameRunning);
 void river(std::vector<Player> &playerList, int &pot, bool &isGameRunning);
@@ -28,6 +27,7 @@ int main()
     playerList.push_back(player1);
     playerList.push_back(player2);
     initGame(deck, playerList, 100);
+    int numNeededToFold = playerList.size() - 1;
     bool isGameRunning = true;
     int gameState = 1;
     int pot = 0;
@@ -37,7 +37,7 @@ int main()
     while (isGameRunning) {
         switch (gameState) {
         case 1: // preFlop
-            preFlop(playerList, pot, BIG_BLIND, SMALL_BLIND, isGameRunning);
+            preFlop(playerList, pot, BIG_BLIND, SMALL_BLIND, isGameRunning, numNeededToFold);
             gameState = 2;
             break;
         case 2: // flop
@@ -57,10 +57,8 @@ int main()
 void initGame(std::vector<Card> &deck, std::vector<Player> &playerList, int playerMoney)
 {
     playerList[0].setHuman(true);
-    playerList[0].setPlayerNumber(1);
     for (int i = 1; i < playerList.size(); i++) {
         playerList[i].setHuman(false);
-        playerList[i].setPlayerNumber(i + 1);
     }
 
     std::random_shuffle(playerList.begin(), playerList.end()); //shuffle player order
@@ -75,6 +73,7 @@ void initGame(std::vector<Card> &deck, std::vector<Player> &playerList, int play
 
     for (int i = 0; i < playerList.size(); i++) {
         playerList[i].setFolded(false);
+        playerList[i].initBetAmount();
     }
 
     dealCards(deck, playerList, playerMoney);
@@ -162,63 +161,95 @@ void displayPlayerCards(Player p)
     std::cout << "\n";
 }
 
-void dealWholeRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck)
-{
-    const int RIVER_SIZE = 5;
-    for (int i = 0; i < RIVER_SIZE; i++) {
-        riverDeck.push_back(deck[i]);
-    }
-    deck.erase(deck.begin(), deck.begin() + 5);
-}
-
 void displayCurrentPot(int pot)
 {
     std::cout << "Current Pot: " << pot << std::endl;
 }
 
-int displayOptionMenu(Player p)
+int displayOptionMenu(Player p, bool isMaxBet)
 {
     std::cout << "Your cards:\n";
     std::cout << p.getCard1().getValue() << " of " << p.getCard1().getSuit() << std::endl;
     std::cout << p.getCard2().getValue() << " of " << p.getCard2().getSuit() << std::endl;
     std::cout << "\nOptions:\n";
-    std::cout << "1. Fold, 2. Check, 3. Bet, 4. Raise\n";
-    std::cout << "Choice: ";
-    int option;
-    do {
-        std::cin >> option;
-        if (option < 1 || option > 4) {
-            std::cout << "Invalid choice.\n";
-        }
-        else {
-            return option;
-        }
-    } while (option < 1 || option > 4);
+    if (isMaxBet) {
+        std::cout << "1. Fold, 2. Call, 3. Raise, 4. Check\n";
+        std::cout << "Choice: ";
+        int option;
+        do {
+            std::cin >> option;
+            if (option < 1 || option > 4) {
+                std::cout << "Invalid choice.\n";
+            }
+            else {
+                return option;
+            }
+        } while (option < 1 || option > 4);
+    }
+    else {
+        std::cout << "1. Fold, 2. Call, 3. Raise\n";
+        std::cout << "Choice: ";
+        int option;
+        do {
+            std::cin >> option;
+            if (option < 1 || option > 3) {
+                std::cout << "Invalid choice.\n";
+            }
+            else {
+                return option;
+            }
+        } while (option < 1 || option > 3);
+    }
 }
 
-void preFlop(std::vector<Player> &playerList, int &pot, const int BIG_BLIND, const int SMALL_BLIND, bool &isGameRunning)
+void preFlop(std::vector<Player> &playerList, int &pot, const int BIG_BLIND, const int SMALL_BLIND, bool &isGameRunning, int numNeededToFold)
 {
     playerList[0].changeMoney(-BIG_BLIND);
+    playerList[0].changeBetAmount(BIG_BLIND);
     pot += BIG_BLIND;
     playerList[1].changeMoney(-SMALL_BLIND);
+    playerList[1].changeBetAmount(SMALL_BLIND);
     pot += SMALL_BLIND;
+
+    int maxBet = BIG_BLIND;
+    int numFolded = 0;
 
     for (int i = playerList.size() - 1; i >= 0; i--) {
         if (playerList[i].isHuman()) {
-            int option = displayOptionMenu(playerList[i]);
-            switch (option) {
+            int optionChoice;
+            displayCurrentPot(pot);
+            if (playerList[i].getBetAmount() < maxBet) {
+                optionChoice = displayOptionMenu(playerList[i], true);
+            }
+            else {
+                optionChoice = displayOptionMenu(playerList[i], false);
+            }
+            switch (optionChoice) {
             case 1: // fold
+                playerList[i].fold();
+                numFolded++;
+                std::cout << "You fold.\n";
                 break;
-            case 2: // check
+            case 2: // call
+                playerList[i].changeMoney(-(maxBet - playerList[i].getBetAmount()));
+                playerList[i].changeBetAmount(maxBet - playerList[i].getBetAmount());
+                std::cout << "You call.\n";
                 break;
-            case 3: // bet
+            case 3: // raise
+                playerList[i].humanRaise(maxBet);
                 break;
-            case 4: // raise
+            case 4: // check
+                std::cout << "You check.\n";
                 break;
             }
         }
         else {
 
+        }
+
+        if (numFolded == numNeededToFold) {
+            isGameRunning = false;
+            break;
         }
     }
 }
