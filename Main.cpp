@@ -4,19 +4,17 @@
 #include "debug.h"
 //#include "Player.h"
 
-void initGame(std::vector<Player> &players); // first game initializer
+void initGame(std::vector<Card> &deck, std::vector<Player> &players, int playerMoney); // first game initializer
 void fillDeck(std::vector<Card> &deck);
-void dealCards(std::vector<Card> &deck, Player &p1, Player &p2);
+void dealCards(std::vector<Card> &deck, std::vector<Player> &playerList, int playerMoney);
 void displayPlayerCards(Player p);
-void dealWholeRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck);
+//void dealWholeRiver(std::vector<Card> &deck, std::vector<Card> &riverDeck);
 void displayCurrentPot(int pot);
-int displayOptionMenu();
-void playerBet();
-void playerRaise();
-void preFlop(std::vector<Player> &playerList, int pot);
-void flop();
-void turn();
-void river();
+int displayOptionMenu(Player p);
+void preFlop(std::vector<Player> &playerList, int &pot, const int BIG_BLIND, const int SMALL_BLIND, bool &isGameRunning);
+void flop(std::vector<Player> &playerList, int &pot, bool &isGameRunning);
+void turn(std::vector<Player> &playerList, int &pot, bool &isGameRunning);
+void river(std::vector<Player> &playerList, int &pot, bool &isGameRunning);
 
 int main()
 {
@@ -29,12 +27,34 @@ int main()
     std::vector<Player> playerList;
     playerList.push_back(player1);
     playerList.push_back(player2);
-    initGame(playerList);
+    initGame(deck, playerList, 100);
+    bool isGameRunning = true;
+    int gameState = 1;
+    int pot = 0;
+    const int BIG_BLIND = 2;
+    const int SMALL_BLIND = 1;
+
+    while (isGameRunning) {
+        switch (gameState) {
+        case 1: // preFlop
+            preFlop(playerList, pot, BIG_BLIND, SMALL_BLIND, isGameRunning);
+            gameState = 2;
+            break;
+        case 2: // flop
+            gameState = 3;
+            break;
+        case 3: // turn
+            gameState = 4;
+            break;
+        case 4: // river
+            break;
+        }
+    }
 
     return 0;
 }
 
-void initGame(std::vector<Player> &playerList) 
+void initGame(std::vector<Card> &deck, std::vector<Player> &playerList, int playerMoney)
 {
     playerList[0].setHuman(true);
     playerList[0].setPlayerNumber(1);
@@ -52,6 +72,12 @@ void initGame(std::vector<Player> &playerList)
         playerList[i].setBigBlind(false);
         playerList[i].setSmallBlind(false);
     }
+
+    for (int i = 0; i < playerList.size(); i++) {
+        playerList[i].setFolded(false);
+    }
+
+    dealCards(deck, playerList, playerMoney);
 }
 
 void fillDeck(std::vector<Card> &deck)
@@ -119,13 +145,13 @@ void fillDeck(std::vector<Card> &deck)
     }
 }
 
-void dealCards(std::vector<Card> &deck, Player &p1, Player &p2)
+void dealCards(std::vector<Card> &deck, std::vector<Player> &playerList, int playerMoney)
 {
-    p1 = Player(deck[0], deck[1], 100);
-    deck.erase(deck.begin(), deck.begin() + 2);
-
-    p2 = Player(deck[0], deck[1], 100);
-    deck.erase(deck.begin(), deck.begin() + 2);
+    for (int i = 0; i < playerList.size(); i++) {
+        playerList[i].setCards(deck[0], deck[1]);
+        playerList[i].setMoney(playerMoney);
+        deck.erase(deck.begin(), deck.begin() + 2);
+    }
 }
 
 void displayPlayerCards(Player p)
@@ -150,9 +176,12 @@ void displayCurrentPot(int pot)
     std::cout << "Current Pot: " << pot << std::endl;
 }
 
-int displayOptionMenu()
+int displayOptionMenu(Player p)
 {
-    std::cout << "Options:\n";
+    std::cout << "Your cards:\n";
+    std::cout << p.getCard1().getValue() << " of " << p.getCard1().getSuit() << std::endl;
+    std::cout << p.getCard2().getValue() << " of " << p.getCard2().getSuit() << std::endl;
+    std::cout << "\nOptions:\n";
     std::cout << "1. Fold, 2. Check, 3. Bet, 4. Raise\n";
     std::cout << "Choice: ";
     int option;
@@ -167,7 +196,29 @@ int displayOptionMenu()
     } while (option < 1 || option > 4);
 }
 
-void preFlop(std::vector<Player> playerList, int pot)
+void preFlop(std::vector<Player> &playerList, int &pot, const int BIG_BLIND, const int SMALL_BLIND, bool &isGameRunning)
 {
-    
+    playerList[0].changeMoney(-BIG_BLIND);
+    pot += BIG_BLIND;
+    playerList[1].changeMoney(-SMALL_BLIND);
+    pot += SMALL_BLIND;
+
+    for (int i = playerList.size() - 1; i >= 0; i--) {
+        if (playerList[i].isHuman()) {
+            int option = displayOptionMenu(playerList[i]);
+            switch (option) {
+            case 1: // fold
+                break;
+            case 2: // check
+                break;
+            case 3: // bet
+                break;
+            case 4: // raise
+                break;
+            }
+        }
+        else {
+
+        }
+    }
 }
