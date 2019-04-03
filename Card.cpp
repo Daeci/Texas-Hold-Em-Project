@@ -1,3 +1,6 @@
+/*
+ * Created by: Sascha Scheidegger
+ */
 #include "Card.h"
 
 Card::Card(std::string suit, std::string value)
