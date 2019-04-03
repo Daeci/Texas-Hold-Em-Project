@@ -1,3 +1,7 @@
+/*
+ * Created by: Sascha Scheidegger and Mitchell Caughron
+ */
+
 #include <algorithm> // std::random_shuffle
 #include <ctime>     // std::time
 #include <cstdlib>   // std::srand
@@ -85,26 +89,12 @@ void initGame(std::vector<Card> &deck, std::vector<Player> &playerList, int play
     playerList[0].setHuman(true);
     playerList[0].setPlayerNumber(1);
     for (int i = 1; i < playerList.size(); i++) {
-        playerList[i].setHuman(false);
-        playerList[i].setPlayerNumber(i+1);
+        playerList[i].setPlayerNumber(i + 1);
     }
 
     std::random_shuffle(playerList.begin(), playerList.end()); //shuffle player order
-    playerList[0].setBigBlind(true);
-    playerList[0].setSmallBlind(false);
-    playerList[1].setBigBlind(false);
-    playerList[1].setSmallBlind(true);
-    for (int i = 2; i < playerList.size(); i++) {
-        playerList[i].setBigBlind(false);
-        playerList[i].setSmallBlind(false);
-    }
-
-    for (int i = 0; i < playerList.size(); i++) {
-        playerList[i].initAllin();
-        playerList[i].initFolded();
-        playerList[i].initChecked();
-        playerList[i].initBetAmount();
-    }
+    playerList[0].setBigBlind();
+    playerList[1].setSmallBlind();
 
     dealCards(deck, playerList, playerMoney);
 }
@@ -286,9 +276,9 @@ bool areAllChecked(std::vector<Player> playerList)
     for (int i = 0; i < playerList.size(); i++) {
         if (playerList[i].isChecked()) {
             count++;
-        }            
+        }
     }
-    
+
     if (count == playerList.size()) {
         return true;
     }
@@ -409,7 +399,7 @@ void preFlop(std::vector<Player> &playerList, int &maxBet, int &pot, const int B
                         }
                         else {
                             std::cout << " * " << playerList[i] << " raises $" << raise << std::endl;
-                        }                        
+                        }
                         playerList[i].check();
                         resetChecked(playerList);
                         break;
@@ -429,7 +419,7 @@ void preFlop(std::vector<Player> &playerList, int &maxBet, int &pot, const int B
                 allChecked = true;
                 break;
             }
-        }
+        }   
     } while (!allChecked && isGameRunning && !enoughAllin);
 }
 
@@ -522,7 +512,7 @@ void flop(std::vector<Player> &playerList, int &maxBet, int &pot, bool &isGameRu
                             playerList[i].changeMoney(-callMoney);
                             playerList[i].changeBetAmount(callMoney);
                             pot += callMoney;
-                        }   
+                        }
                         playerList[i].check();
                         break;
                     case 3: // raise
