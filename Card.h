@@ -1,8 +1,7 @@
+#pragma once
 /*
  * Created by: Sascha Scheidegger
  */
-
-#pragma once
 #include <iostream>
 #include <string>
 
