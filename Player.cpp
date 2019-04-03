@@ -1,3 +1,7 @@
+/*
+ * Created by: Sascha Scheidegger and Mitchell Caughron
+ */
+
 #include <random>
 #include "Player.h"
 
