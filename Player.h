@@ -1,8 +1,7 @@
+#pragma once
 /*
  * Created by: Sascha Scheidegger and Mitchell Caughron
  */
-
-#pragma once
 #include "Card.h"
 
 class Player {
