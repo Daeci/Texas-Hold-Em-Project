@@ -1,3 +1,6 @@
+/*
+ * Created by: Sascha Scheidegger and Mitchell Caughron
+ */
 #include <random>
 #include "Player.h"
 
@@ -22,7 +25,7 @@ int Player::humanRaise(int maxBet)
         else {
             return raiseAmount;
         }
-    } while (raiseAmount <= (maxBet - betAmount));
+    } while (raiseAmount <= (maxBet - betAmount) || raiseAmount > money);
 }
 
 int Player::computerRaise(int maxBet)
