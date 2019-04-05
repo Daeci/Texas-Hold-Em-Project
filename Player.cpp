@@ -1,6 +1,6 @@
 /*
- * Created by: Sascha Scheidegger and Mitchell Caughron
- */
+* Created by: Sascha Scheidegger and Mitchell Caughron
+*/
 #include <random>
 #include "Player.h"
 
@@ -16,7 +16,10 @@ int Player::humanRaise(int maxBet)
     do {
         std::cout << "Raise amount: ";
         std::cin >> raiseAmount;
-        if (raiseAmount <= (maxBet - betAmount)) {
+        if (!std::cin) {
+            throw("You were only supposed to input a number. Shame on you.\n");
+        }
+        else if (raiseAmount <= (maxBet - betAmount)) {
             std::cout << "Raise needs to be higher than the max bet!\n";
         }
         else if (raiseAmount > money) {
